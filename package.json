@@ -1,0 +1,7 @@
+{
+  "name": "svg-map",
+  "version": "",
+  "scripts": {
+    "start" : "http-server code"
+  }
+}
