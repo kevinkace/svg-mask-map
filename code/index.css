@@ -89,6 +89,6 @@ body {
 }
 
 .paths {
-    opacity: 0.3;
+    opacity: 0;
     background-image: url(/img/paths.png);
 }

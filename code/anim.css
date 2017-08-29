@@ -1,5 +1,5 @@
 body {
-    --dur: 6s;
+    --dur: 8s;
 }
 
 
@@ -36,6 +36,12 @@ body {
     animation: infinite var(--dur) l0;
 }
 @keyframes l0 {
+    0 {
+        opacity: 0;
+    }
+    15% {
+        opacity: 0.3;
+    }
     35% {
         transform: translateZ(0);
     }
@@ -44,6 +50,7 @@ body {
     }
     85% {
         transform: translateZ(85vw);
+        opacity: 0.3;
     }
 }
 
