@@ -3,7 +3,6 @@ html {
     margin: 0;
     padding: 0;
     height: 100%;
-    --dur: 6s;
 }
 
 *,
@@ -20,62 +19,18 @@ body {
     margin: 0;
 }
 
-.container {
-    perspective: 5000vw;
-    transition: transform 1s;
-
-    animation: infinite var(--dur) zoom;
-}
-
-@keyframes zoom {
-    0 {
-        perspective: 5000vw;
-    }
-    10% {
-        perspective: 200vw;
-    }
-    50% {
-        perspective: 100vw;
-    }
-    100% {
-        perspective: 5000vw;
-    }
+.perspective {
+    perspective: 500vw;
 }
 
 .rotate {
     position: relative;
     width: 100vw;
     height: 51.53vw;
-    transform: translateZ(-80vw) rotateY(0deg);
     transform-style: preserve-3d;
-
-    animation: infinite var(--dur) rotation;
 }
 
-@keyframes rotation {
-    0 {
-        transform: translateZ(-80vw) rotateY(0deg);
-    }
-    10% {
-        transform: translateZ(-80vw) rotateY(0deg);
-    }
-    50% {
-        transform: translateZ(-80vw) translateX(-20vw) rotateY(60deg);
-    }
-
-    100% {
-        transform: translateZ(-80vw) rotateY(0deg);
-    }
-}
-
-.fade,
-.default,
-.mask,
-.highlight1,
-.highlight2,
-.highlight3,
-.highlight4,
-.map {
+.layer {
     position: absolute;
     top: 0;
     right: 0;
@@ -85,64 +40,55 @@ body {
     background-size: contain;
 }
 
+.bg {
+    background-image: url(/img/bg.jpg);
+    background-size: cover;
+}
+
 .fade {
-    transform: translateZ(-30vw);
-    background-image: url(/fade.jpg);
+    background-image: url(/img/fade.jpg);
 }
 
 .default {
     opacity: 0.8;
-    background-image: url(/default.jpg);
+    background-image: url(/img/default.jpg);
+}
+
+.fadeT {
+    background-image: url(/img/fade.png);
+}
+
+.defaultT {
+    background-image: url(/img/default.png);
 }
 
 .mask {
-    transform: translateZ(30vw);
     opacity: 0.5;
-    background-image: url(/mask.jpg);
+    background-image: url(/img/mask.jpg);
 }
 
 .highlight1 {
-    transform: translateZ(50vw);
     background-size: 44%;
     background-position: 38% 28%;
-    background-image: url(/highlight1.png);
+    background-image: url(/img/highlight1.png);
 }
 .highlight2 {
-    transform: translateZ(55vw);
-    background-size: 65%;
-    background-position: 0 80%;
-    background-image: url(/highlight2.png);
+    background-size: 64.8%;
+    background-position: 0 79.3%;
+    background-image: url(/img/highlight2.png);
 }
 .highlight3 {
-    transform: translateZ(60vw);
-    background-position: 64% 0;
-    background-size: 30%;
-    background-image: url(/highlight3.png);
+    background-position: 63.7% 0;
+    background-size: 30.4%;
+    background-image: url(/img/highlight3.png);
 }
 .highlight4 {
-    transform: translateZ(65vw);
-    background-size: 25%;
-    background-position: 89% 51%;
-    background-image: url(/highlight4.png);
-}
-
-svg {
-    width: 100%;
-    height: auto;
-}
-
-.images {
-    transform: translateZ(-100px);
-}
-
-.base {}
-
-.highlight {
-    opacity: 0;
-    transform: translateZ(10px);
+    background-size: 25.6%;
+    background-position: 89.4% 53.4%;
+    background-image: url(/img/highlight4.png);
 }
 
 .paths {
-    fill: rgba(255, 0, 0, 0.3);
-    transform: translateZ(200px);
+    opacity: 0.3;
+    background-image: url(/img/paths.png);
 }
