@@ -1,4 +1,4 @@
-# SVG Transparency Mask and Pseudo Image Map
+# SVG Transparency Mask and Image Map
 
 Note: *This is my first post of this nature. It describes combining a few different capabilities of SVG (and JS/CSS) that I thought others might benefit from (SVG masks/paths, positioning, CSS animations). I hope you enjoy it, and if you see any improvements (technical or otherwise) please comment.*
 
@@ -12,9 +12,11 @@ This one section the site consisted of a full-bleed background image, some intro
 1. the other mounts would fade out
 1. the background would dim
 
-![](gif of svg in use)
+<video autoplay loop style="max-width: 100%">
+<source src="https://fat.gfycat.com/MealyNippyCreature.webm" type="video/mp4">
+</video>
 
-It was basically a juiced up version of some UI that’s been in place on GuildWars2.com for years.
+It was basically a juiced up version of the [https://www.guildwars2.com/en/the-game/professions/](a).
 
 ## Art Assets
 
@@ -26,7 +28,9 @@ Modifying opacity is a common go-to solution for highlighting on hover, but it w
 - 1 image of all mounts default state
 - 1 image of **each** mount highlighted
 
-![](gif of animated explosion)
+<video autoplay loop style="max-width: 100%">
+<source src="https://giant.gfycat.com/DependentSnoopyIrishwolfhound.webm" type="video/mp4">
+</video>
 
 Initially the solid overlay, and all highlighted images have their `opacity` set to `0`, when a mount is hovered the overlay and one highlighted mount transition to `opacity: 1`, while the default mounts image fades out.
 
@@ -37,6 +41,10 @@ Let's put aside the complexity of the hover transitions, just one of the mounts 
 ## The Plan
 
 I'm going to fast forward through the trial and error. I first looked to SVG primarily for defining the hoverable regions with polyshapes, but SVG can also solve the size issue of large PNGs: using a transparency mask. This combines a grayscale image defining the transparency (or alpha), and a second image with the actual image data. Neither image has transparency so formats with better compression can be used (usually JPG).
+
+<video autoplay loop style="max-width: 100%">
+<source src="https://giant.gfycat.com/RadiantAshamedAfghanhound.webm" type="video/mp4">
+</video>
 
 Here's the DOM and SVG outline:
 
