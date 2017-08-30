@@ -1,24 +1,46 @@
 # SVG Transparency Mask and Image Map
 
-Note: *This is my first post of this nature. It describes combining a few different capabilities of SVG (and JS/CSS) that I thought others might benefit from (SVG masks/paths, positioning, CSS animations). I hope you enjoy it, and if you see any improvements (technical or otherwise) please comment.*
+This is my first post of this nature. It describes combining a few different capabilities of SVG, namely transparency masks (smaller than PNGs), CSS transitions, positioning elements within an SVG using CSS `transform`, and SVG `path`s for an image map.
 
-One of *Guild Wars 2*s greatest strengths is its rich, organic art style; paint strokes, water colors, large art pieces. Basically things that are hard to build into websites, which leads to interesting solutions. Recently working on the Path of Fire website we had another situation like this for the mounts, and specializations sections. Here on out I'll only refer to mounts, but the specializations was accomplished using the same technique.
+I hope you enjoy it, and if you see any improvements (technical or otherwise) please comment.
 
-## Project Description
+## Feature Description
 
-This one section the site consisted of a full-bleed background image, some intro text, and a collage of the 4 mounts centered within. The tricky part came when hovering over a mount:
+*Guild Wars 2* has a rich, blended, organic art style which can be difficult to incorporate into a website. There were a few tricky sections when developing the *Path of Fire* website. One specifically was the section for newly launched **mounts**!* It has a graphic of 4 mounts centered on a background, hovering on a mount shifts the "lighting", highlighting the hovered mount, and fading out the other mounts and background. Clicking on a mount opens detail of the mount but not descibed here.
 
-1. the hovered mount would highlight
-1. the other mounts would fade out
-1. the background would dim
+Here's what the [final product](https://www.guildwars2.com/en/path-of-fire/#mounts) looks like:
 
 <video autoplay loop style="max-width: 100%">
 <source src="https://fat.gfycat.com/MealyNippyCreature.webm" type="video/mp4">
 </video>
 
-It was basically a juiced up version of the [https://www.guildwars2.com/en/the-game/professions/](a).
+It's functionally a juiced up version of the [professions page](https://www.guildwars2.com/en/the-game/professions/).
 
-## Art Assets
+* The specializations section also used this feature, but no one wants to write or read "specializations" a hundred times in this article. TL;DR: it got double usage.
+
+## Unique problems
+
+Other than the mounts graphic, the section has intro text above (localized into 4 languages), and navigation below, all on top of a fullbleed background image. To keep text length flexible, the mounts image had to be on a transparent background. Using transparent PNGs for the mounts images would be the conventional approach, and would look/work great, with one major detraction: file size. The mounts image was over 1200x600px, and there were 3 of them (base, highlighted, faded out).
+
+Defining the hoverable region around a mount image is also a little tricky, as the mounts are irregularly shaped so a rectangular `div` wouldn't cut it. The professions section on GW2.com uses an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
+
+## Coming to a solution
+
+The one part that had a clear solution get-go was fading the background. Transitioning opacity on a `div` with a background color filling the entire section would be simple and effective.
+
+For the other problems, well... I've been using SVG more and more recently, and perhaps in a case of "everything is a nail when you have a hammer", I looked to SVG to solve the other problems, file size and hover regions.
+
+### SVG transparancy mask
+
+This is a simple technique that we've been using at ArenaNet after seeing this article [Using SVG to Shrink Your PNGs](http://peterhrynkow.com/how-to-compress-a-png-like-a-jpeg/) in Sept 2014. The idea is to split a single transparent image (PNG) into 2 opaque images, extracting the transparancy data to a separate image - the transparancy mask. The mask works the same as a layer mask in Photoshop - a black and white image where black is transparent. These 2 images are opque meaning they can be much smaller JPGs.
+
+Creating these 2 images todo
+
+### SVG paths
+
+These are irregular shapes which are well suiting for defining the hoverable regions for each mount. I created these paths in Adobe Illustrator.
+
+I'm going to fast forward through the trial and error. I first looked to SVG primarily for defining the hoverable regions with polyshapes, but SVG can also solve the size issue of large PNGs: using a transparency mask. This combines a grayscale image defining the transparency (or alpha), and a second image with the actual image data. Neither image has transparency so formats with better compression can be used (usually JPG).
 
 Modifying opacity is a common go-to solution for highlighting on hover, but it wasn't an option here as additional art was created for the highlighted and faded states, effectively 3x 1000x500 images. The visual elements stacked and aligned from back to front:
 
