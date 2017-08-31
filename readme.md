@@ -11,18 +11,22 @@ I hope you enjoy it, and if you see any improvements (technical or otherwise) pl
 Here's what the [final product](https://www.guildwars2.com/en/path-of-fire/#mounts) looks like:
 
 <video autoplay loop style="max-width: 100%">
-<source src="https://fat.gfycat.com/MealyNippyCreature.webm" type="video/mp4">
+  <source src="https://fat.gfycat.com/MealyNippyCreature.webm" type="video/mp4">
 </video>
 
-It's functionally a juiced up version of the [professions page](https://www.guildwars2.com/en/the-game/professions/).
+It's similar to the UI on the [professions page](https://www.guildwars2.com/en/the-game/professions/), but ended up with a very different solution.
 
-* The specializations section also used this feature, but no one wants to write or read "specializations" a hundred times in this article. TL;DR: it got double usage.
+* The specializations section also used this feature, but no one wants to write or read "specializations" a hundred times throughout this article. TL;DR: I got double usage out of this technique.
 
 ## Unique problems
 
 Other than the mounts graphic, the section has intro text above (localized into 4 languages), and navigation below, all on top of a fullbleed background image. To keep text length flexible, the mounts image had to be on a transparent background. Using transparent PNGs for the mounts images would be the conventional approach, and would look/work great, with one major detraction: file size. The mounts image was over 1200x600px, and there were 3 of them (base, highlighted, faded out).
 
 Defining the hoverable region around a mount image is also a little tricky, as the mounts are irregularly shaped so a rectangular `div` wouldn't cut it. The professions section on GW2.com uses an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
+
+Here are the visual components
+
+todo: video of visual components
 
 ## Coming to a solution
 
@@ -38,94 +42,125 @@ Creating these 2 images todo
 
 ### SVG paths
 
-These are irregular shapes which are well suiting for defining the hoverable regions for each mount. I created these paths in Adobe Illustrator.
+An SVG `path` can define an irregular shape with a variety of line commands, including `curveto` which uses Bezier curves - this is a great fit for the hoverable regions.
 
-I'm going to fast forward through the trial and error. I first looked to SVG primarily for defining the hoverable regions with polyshapes, but SVG can also solve the size issue of large PNGs: using a transparency mask. This combines a grayscale image defining the transparency (or alpha), and a second image with the actual image data. Neither image has transparency so formats with better compression can be used (usually JPG).
+I created these paths in Adobe Illustrator:
 
-Modifying opacity is a common go-to solution for highlighting on hover, but it wasn't an option here as additional art was created for the highlighted and faded states, effectively 3x 1000x500 images. The visual elements stacked and aligned from back to front:
+# open one of the base PNGs in Illustrator
+# use the pen-tool to draw shapes around each mount
+# File > Export > Export as...
+# select SVG
+# check Use Artbox
+# click ok
 
-- 1 full bleed background image
-- 1 element of a solid color fill to overlay background (`rgba(255, 255, 255, 0.3)`)
-- 1 image of all mounts faded out
-- 1 image of all mounts default state
-- 1 image of **each** mount highlighted
+I opened the SVG in a text editor, and copied the path strings to my component.
+
+## Putting it all together
+
+Here are all the assets for this feature:
+
+- full bleed background image
+- background fade element
+- image of all mounts faded out
+- image of all mounts default state
+- image of transparency mask
+- 4 images of mounts highlighted
+- paths for hoverable region
 
 <video autoplay loop style="max-width: 100%">
-<source src="https://giant.gfycat.com/DependentSnoopyIrishwolfhound.webm" type="video/mp4">
-</video>
-
-Initially the solid overlay, and all highlighted images have their `opacity` set to `0`, when a mount is hovered the overlay and one highlighted mount transition to `opacity: 1`, while the default mounts image fades out.
-
-One last component is to define regions for the mouseover event to trigger the highlight/fade effect. This region would need to be irregularly shaped, (a div/span isn't well suited).
-
-Let's put aside the complexity of the hover transitions, just one of the mounts images posed an issue: it's large, around 1000x500, and requires transparency. PNGs are the usual go-to for something like this, but even with optimization a PNG was over 2mb.
-
-## The Plan
-
-I'm going to fast forward through the trial and error. I first looked to SVG primarily for defining the hoverable regions with polyshapes, but SVG can also solve the size issue of large PNGs: using a transparency mask. This combines a grayscale image defining the transparency (or alpha), and a second image with the actual image data. Neither image has transparency so formats with better compression can be used (usually JPG).
-
-<video autoplay loop style="max-width: 100%">
-<source src="https://giant.gfycat.com/RadiantAshamedAfghanhound.webm" type="video/mp4">
+  <source src="https://giant.gfycat.com/DependentSnoopyIrishwolfhound.webm" type="video/mp4">
 </video>
 
 Here's the DOM and SVG outline:
 
 ```html
-<!-- 00. background -->
+<!-- 01. background & overlay -->
 <section>
+  <div></div>
 
- <!-- 01. overlay -->
-<div></div>
+  <svg>
+    <!-- > 02. mask definition -->
+    <defs>
+      <mask id="mask">
+        <image href="/grey-scale-alpha.jpg"></image>
+      </mask>
+    </defs>
 
-<svg>
-  <!-- > 02. mask definition -->
-  <defs>
-    <mask id="mask">
-      <image href="/grey-scale-alpha.jpg"></image>
-    </mask>
-  </defs>
+    <!-- 03. default and faded out collage of all mounts -->
+    <g mask="url(#mask)">
+      <image href="/faded-out-mounts.jpg"/>
+      <image href="/default-mounts.jpg"/>
+    </g>
 
-  <!-- 03. default and faded out collage of all mounts -->
-  <g mask="url(#mask)">
-    <image href="/faded-out-mounts.jpg"/>
-    <image href="/default-mounts.jpg"/>
-  </g>
+    <!-- 04. individual images of each mount highlighted -->
+    <g>
+      <image href="/mount-0-hightlight.png"></image>
+      <image href="/mount-1-hightlight.png"></image>
+      <image href="/mount-2-hightlight.png"></image>
+      <image href="/mount-3-hightlight.png"></image>
+    </g>
 
-  <!-- 04. individual images of each mount highlighted -->
-  <g>
-    <image href="/mount-0-hightlight.png"></image>
-    <image href="/mount-1-hightlight.png"></image>
-    <image href="/mount-2-hightlight.png"></image>
-    <image href="/mount-3-hightlight.png"></image>
-  </g>
-
-  <!-- 05. mouseover regions -->
-  <g>
-    <path d="path data for mount 0"></path>
-    <path d="path data for mount 1"></path>
-    <path d="path data for mount 2"></path>
-    <path d="path data for mount 3"></path>
-  </g>
-</svg>
+    <!-- 05. mouseover regions -->
+    <g>
+      <path d="/* path data for mount 0 */"></path>
+      <path d="/* path data for mount 1 */"></path>
+      <path d="/* path data for mount 2 */"></path>
+      <path d="/* path data for mount 3 */"></path>
+    </g>
+  </svg>
+</section>
 ```
 
-### 00. Background
+### 00. Background & overlay
 
-Just a standard JPG, compressed at medium quality in Photoshop, 1920x1080. This is set as the sections background with `background-size` set to `cover`.
+Starting with the outer most elements; the full bleed background image and the background fade element. When a mount is hovered, the `bgFade-in` class will be added to `div.bgFade` obscuring the background image behind.
 
-### 01. Overlay
+todo: gif of just BG interaction
 
-A single `div`, positioned `absolute` to fill the section. Setting a solid background color on the `div` and transitioning the `opacity` from `0` to `0.3` was enough to achieve the background dimming.
+```html
+<section class="mountsSection">
+    <div class="bgFade"></div>
+    <!-- ...more code -->
+</section>
+```
 
-### 02. Mask
+```css
+.mountsSection {
+  position: relative;
+  background: url(./img/bg.jpg);
+  background-size: cover;
+}
+.bgFade {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.3);
 
-Note: *You can skip this paragraph if you're familiar with SVG masks (or layer masks in Photoshop). The process describing how to make the actual mask is later.*
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.bgFade-in {
+  opacity: 1;
+}
+```
 
-The basic idea is to use a separate grey-scale image which defines the transparency; black being fully transparent, white being fully opaque and greys in between for translucency. This image mask is then applied over another image to create transparency. The `def` element, for "definition", means it's children aren't to be shown directly, the `image` within the `mask` will be referenced later in the SVG by ID.
+### 02. SVG mask
+
+We start here with a `def` element, for "definition", it's children aren't to be shown directly but will be referenced later in (or outside) the SVG by ID. Within the `def` there's a `mask`, and an `image`. This transparancy mask will be used by it's `id`.
+
+```html
+<defs>
+  <mask id="mask">
+    <image href="/grey-scale-alpha.jpg"></image>
+  </mask>
+</defs>
+```
 
 ### 03. Images
 
-Here we have the actual image content, but with no transparency. The images will be stacked on top of each other, one for the default state, one for the faded out state. Animating the opacity of the default image will reveal the faded out image behind. and because they are grouped in a `g`, the mask is applied to the combination of the 2 images.
+Here we have 2 `image`s nested in a group `g`, and the transparency mask is applied to the group. The 2 images (and anything within the `g`) are masked, removing the background. content, but with no transparency. The images will be stacked on top of each other, one for the default state, one for the faded out state. Animating the opacity of the default image will reveal the faded out image behind. and because they are grouped in a `g`, the mask is applied to the combination of the 2 images.
 
 ### 04. Highlight Images
 
