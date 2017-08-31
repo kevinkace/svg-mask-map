@@ -1,6 +1,6 @@
 # SVG Transparency Mask and Image Map
 
-This is my first post of this nature. It describes combining a few different capabilities of SVG, namely transparency masks (smaller than PNGs), CSS transitions, positioning elements within an SVG using CSS `transform`, and SVG `path`s for an image map.
+This is my first post of this nature. It describes combining a few different capabilities of SVG, namely transparency masks, CSS transitions, positioning elements within an SVG using CSS `transform`, and using `path`s for an image map.
 
 I hope you enjoy it, and if you see any improvements (technical or otherwise) please comment.
 
