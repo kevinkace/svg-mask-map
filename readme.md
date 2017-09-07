@@ -1,28 +1,28 @@
 # SVG Transparency Mask and Image Map
 
-This is my first post of this nature. It describes combining a few different capabilities of SVG, namely transparency masks, CSS transitions, positioning elements within an SVG using CSS `transform`, and using `path`s for an image map.
+In this post I describe a few different SVG features: transparency masks, positioning elements within an SVG using CSS `transform`, and using `path`s for an image map.
 
 I hope you enjoy it, and if you see any improvements (technical or otherwise) please comment.
 
 ## Project description
 
-*Guild Wars 2* has a rich, blended, organic art style which can be difficult to incorporate into a website. There were a few tricky sections when developing the *Path of Fire* website. One specifically was the section for newly launched **mounts**!* It has a graphic of 4 mounts centered on a background, hovering on a mount shifts the "lighting", highlighting the hovered mount, and fading out the other mounts and background. Clicking on a mount opens detail of the mount but not descibed here.
+*Guild Wars 2* has a rich, blended, organic art style which can be difficult to incorporate into a website. There were a few tricky sections when developing the *Path of Fire* website. One specifically was the section for a new flagship feature: **mounts**!* The section has a graphic of 4 mounts centered on a background. Hovering on a mount shifts the "lighting", highlighting the hovered mount, and fading out the other mounts and background. Clicking on a mount opens a detailed view of the mount, which isn't descibed here.
 
-Here's what the [final product](https://www.guildwars2.com/en/path-of-fire/#mounts) looks like:
+Here's the [final product](https://www.guildwars2.com/en/path-of-fire/#mounts), here's a [link to the code on github](todo: github link) and here's what it looks like:
 
 <video autoplay loop style="max-width: 100%">
   <source src="https://fat.gfycat.com/MealyNippyCreature.webm" type="video/mp4">
 </video>
 
-It's similar to the UI on the [professions page](https://www.guildwars2.com/en/the-game/professions/), but ended up with a very different solution.
+It's similar to the UI on the [professions page](https://www.guildwars2.com/en/the-game/professions/), but I ended up with a very different solution.
 
 * The specializations section also used this feature, but no one wants to write or read "specializations" a hundred times throughout this article. TL;DR: I got double usage out of this technique.
 
 ## Unique problems
 
-Other than the mounts graphic, the section has intro text above (localized into 4 languages), and navigation below, all on top of a fullbleed background image. To keep text length flexible, the mounts image had to be on a transparent background. Using transparent PNGs for the mounts images would be the conventional approach, and would look/work great, with one major detraction: file size. The mounts image was over 1200x600px, and there were 3 of them (base, highlighted, faded out).
+The section begins with intro text (localized into 4 languages), then the interactive mounts graphic, and it ends with navigation. This is all on top of a fullbleed background image. To keep text length flexible, the mounts image had to have a transparent background. Using transparent PNGs for the mounts images would be the conventional approach, and they would look & work great, but there's one major detraction: file size. The mounts image was over 1200x600px, and there were approx 3 of each image (base, highlighted, faded out), this starts to add up.
 
-Defining the hoverable region around a mount image is also a little tricky, as the mounts are irregularly shaped so a rectangular `div` wouldn't cut it. The professions section on GW2.com uses an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
+Another uncommon requirement are the hoverable regions around each mount image, which are irregularly shaped (a rectangular `div` wouldn't cut it). One option is an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
 
 Here are the visual components:
 
@@ -82,7 +82,7 @@ Here's the DOM and SVG outline:
     <!-- > 02. mask definition -->
     <defs>
       <mask id="mask">
-        <image href="/grey-scale-alpha.jpg"></image>
+        <image href="/transparancy-mask.jpg"></image>
       </mask>
     </defs>
 
@@ -132,7 +132,7 @@ todo: gif of just BG interaction
   background: url(./img/bg.jpg);
   background-size: cover;
 }
-.bgFade {
+.overlay {
   position: absolute;
   top: 0;
   right: 0;
@@ -143,19 +143,19 @@ todo: gif of just BG interaction
   opacity: 0;
   transition: opacity 0.3s;
 }
-.bgFade-in {
+.overlay-visible {
   opacity: 1;
 }
 ```
 
 ### 02. SVG mask
 
-We start here with a [`def` element](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs), it's children aren't to be shown directly but will be referenced by ID later. Within the `def` there's a `mask`, and an `image` with `href` referring to the transparancy mask made earlier.
+We start here with [`def`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/defs), the children within aren't shown directly but will be referenced by ID later. Within the `def` there's a `mask`, and an `image` with `href` referring to the transparancy mask made earlier.
 
 ```html
 <defs>
   <mask id="mountsMask">
-    <image width="1269" height="654" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="transparancy-mask.jpg"></image>
+    <image width="1269" height="654" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/transparancy-mask.jpg"></image>
   </mask>
 </defs>
 ```
@@ -166,9 +166,19 @@ Here we have 2 `image`s nested in a group `g`, and the transparency mask is appl
 
 ```html
 <g mask="url(#mask)">
-  <image width="1269" height="654" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="faded-image.jpg"></image>
-  <image width="1269" height="654" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="default-image.jpg"></image>
+  <image width="1269" height="654" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/faded-image.jpg"></image>
+  <image width="1269" height="654" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/default-image.jpg" class="default"></image>
 </g>
+```
+
+```css
+.default {
+  opacity: 1;
+  transition: opacity: 0.3s
+}
+.default-hidden {
+  opacity: 0;
+}
 ```
 
 ### 04. Highlight Images
@@ -179,20 +189,34 @@ Positioning each highlight `image` is a little tricky, the only option is transl
 
 ```html
 <g>
-  <image width="558" height="386" transform="matrix(1, 0, 0, 1, 270, 75)" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="highlight-0.png">
+  <image class="highlight" width="558" height="386" transform="matrix(1, 0, 0, 1, 270, 75)"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/highlight-0.png">
   </image>
-  <image width="820" height="250" transform="matrix(1, 0, 0, 1, 0, 320)" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="highlight-1.png">
+  <image class="highlight" width="820" height="250" transform="matrix(1, 0, 0, 1, 0, 320)"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/highlight-1.png">
   </image>
-  <image width="387" height="600" transform="matrix(1, 0, 0, 1, 562, -1)" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="highlight-2.png">
+  <image class="highlight" width="387" height="600" transform="matrix(1, 0, 0, 1, 562, -1)"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/highlight-2.png">
   </image>
-  <image width="322" height="468" transform="matrix(1, 0, 0, 1, 846, 100)" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="highlight-3.png">
+  <image class="highlight" width="322" height="468" transform="matrix(1, 0, 0, 1, 846, 100)"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/highlight-3.png">
   </image>
   </g>
 ```
 
+```css
+.highlight {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.highlight-visible {
+  opacity: 1;
+}
+```
+
 ### 05. Mouse Regions
 
-And finally 4 `path`s, one for each mount, when hovered will set off the `opacity` transitions.
+And finally 4 `path`s, one for each mount. These paths will have event listeners attached, so that hovering on a mount will set off the highlight transitions.
 
 ```html
 <g>
@@ -207,39 +231,81 @@ And finally 4 `path`s, one for each mount, when hovered will set off the `opacit
   </g>
 ```
 
-## Making the Web Assets
+## JS implementation
 
-I started in Adobe Illustrator, adding the base mounts image. This set the artboard size (similar to the canvas size in Photoshop), and this will be the size of the SVG.
+The webteam at ArenaNet has been using Mithril for a couple years, and this project was no different. Mithril uses hyperscript (`m("div", attrs, children)`) for rendering HTML. Events can be attached to elements via the `attrs` object.
 
-I then added paths using the pen tool, tracing loosely around each mount to define the hoverable regions.
-
-For the implementation I was pursuing (Mithril rendered) I needed to extract the path data.
-
-Hide the image layer
-File > Export > SVG
-Check “use artboard"
-Save to file
-Open SVG in editor
-Copy path data to your app
-
-## The Implementation
-
-The webteam at ArenaNet has been using Mithril for a couple years, and this project was no different. Mithril uses hyperscript (`m("div", attrs, children)`) for rendering HTML. Events can be attached to elements via the `attrs` object. Let's get right to the code:
-
-Note: *SVG has a lot of boilerplate attributes which I'm leaving out from the example code*
+Note: *SVG has a lot of boilerplate attributes which I'm leaving out from this code, it's included in the [github repo](todo: github link)*
 
 ```js
+mount; // to track the hovered mount
+
 m("svg",
   m("defs",
     m("mask", { id : "mask" },
-      m("image", { href : "/faded-out-mounts.jpg" }),
-      m("image", { href : "/faded-out-mounts.jpg" })
+      m("image", { href : "/transparancy-mask.jpg" })
     )
   ),
 
-  m("g")
+  m("g", { mask : "url(#mask)" },
+    m("image", { href : "/faded-image.jpg" }),
+    m("image", {
+      href  : "/default-image.jpg",
+      class : isNaN(mount) ? "default" : "default-hidden"
+    })
+  ),
+
+  m("g", [{
+      href      : "highlight-0.png",
+      transform : "translate(200px, 100px)"
+    }, {
+      href      : "highlight-1.png",
+      transform : "translate(400px, 10px)"
+    }, {
+      href      : "highlight-2.png",
+      transform : "translate(900px, 400px)"
+    }, {
+      href      : "highlight-3.png",
+      transform : "translate(200px, 200px)"
+    }].map((highlight) =>
+      m("image", {
+        href  : highlight.href,
+        class : isNaN(mount) ? "highlight-hidden" : "highlight",
+        style : { transform : highlight.transform }
+      })
+    )
+  ),
+
+  m("g", [
+      "path data",
+      "path data",
+      "path data",
+      "path data"
+    ].map((d, idx) =>
+      m("path", {
+        d,
+        onmousein : () => {
+          mount = idx;
+        },
+        onmouseout : () => {
+          mount = undefined;
+        }
+      })
+    )
+  )
 )
 ```
 
+Without going into too much detail here (as it's more of an implementaion choice), hovering on a mount sets `mount` to the current index. When rendering, parts of the SVG that need to transition (eg. background overlay, highlight mount) use a ternary to return the correct `class`. Mithril auto-redraws on event listeners so no need to manually call `m.redraw()`.
+
+## Last notes
+
+Another nice aspect of SVG is that it scales well. The translation values, height, width are all in `px`, but adjusting the SVG's `width` (for varying screen sizes) scales everything appropriately.
+
+And incase you skipped down to the bottom, once again here's the [final product on the Path of Fire site](https://www.guildwars2.com/en/path-of-fire/#mounts), here's a [link to the code on github](todo: github link), and here's what it looks like:
+
+<video autoplay loop style="max-width: 100%">
+  <source src="https://fat.gfycat.com/MealyNippyCreature.webm" type="video/mp4">
+</video>
 
 
