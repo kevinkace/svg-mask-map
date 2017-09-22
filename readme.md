@@ -22,11 +22,7 @@ It's similar to the UI on the [professions page](https://www.guildwars2.com/en/t
 
 The section begins with intro text (localized into 4 languages), then the interactive mounts graphic, and it ends with navigation. This is all on top of a fullbleed background image. To keep text length flexible, the mounts image had to have a transparent background. Using transparent PNGs for the mounts images would be the conventional approach, and they would look & work great, but there's one major detraction: file size. The mounts image was over 1200x600px, and there were approx 3 of each image (base, highlighted, faded out), this starts to add up.
 
-Another uncommon requirement are the hoverable regions around each mount image, which are irregularly shaped (a rectangular `div` wouldn't cut it). One option is an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
-
-Here are the visual components:
-
-todo: video of visual components
+Another uncommon requirement is the hoverable regions around each mount image, which are irregularly shaped (a rectangular `div` wouldn't cut it). One option is an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
 
 ## Working towards a solution
 
@@ -36,9 +32,9 @@ For the other problems, well... I've been using SVG more and more recently, and 
 
 ### SVG transparancy mask
 
-This is a simple technique that we've been using at ArenaNet for a while. I first saw it described in an article [Using SVG to Shrink Your PNGs](http://peterhrynkow.com/how-to-compress-a-png-like-a-jpeg/) in Sept 2014. The idea is to split a transparent image (PNG) into 2 opaque images, separating the transparancy data from the color data. The transparancy data is saved as a greyscale image, and works the same as a layer mask in Photoshop - black is transparent, white is opaque. These 2 actual images are fully opque meaning they can be compressed more easily.
+This is a simple technique that we've been using at ArenaNet for a while. I first saw it described in [Using SVG to Shrink Your PNGs](http://peterhrynkow.com/how-to-compress-a-png-like-a-jpeg/) in Sept 2014. The idea is to split a transparent image (PNG) into 2 opaque images, separating the transparancy data from the color data. The transparancy data is saved as a greyscale image, and works the same as a layer mask in Photoshop - black is transparent, white is opaque. These 2 images are fully opque meaning they can be compressed more easily (JPG, opaque PNG or GIF).
 
-Creating these 2 images todo
+Creating these images is easily done with [`png2svg`](https://www.npmjs.com/package/png2svg) by Alexander Daniel, which takes a transparent PNG as input, and outputs an SVG with the 2 images (transparency mask and base image) base64 encoded within. I then brought those images into Photoshop and reexported to ensure that the quality and file size met my expectations.
 
 ### SVG paths
 
