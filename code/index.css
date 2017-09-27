@@ -45,6 +45,12 @@ body {
     background-size: cover;
 }
 
+.bgFade {
+    opacity: 0;
+    background: white;
+    border: solid 2px #666;
+}
+
 .fade {
     background-image: url(/img/fade.jpg);
 }

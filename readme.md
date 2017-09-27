@@ -24,17 +24,21 @@ The section begins with intro text (localized into 4 languages), then the intera
 
 Another uncommon requirement is the hoverable regions around each mount image, which are irregularly shaped (a rectangular `div` wouldn't cut it). One option is an [image `map`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/map) with mouse events added to `area`s, one for each profession. This actually works great, but I didn't reuse it here.
 
-## Working towards a solution
+## Planning the solution
 
 The one part that had a clear solution get-go was fading the background. Transitioning opacity on a `div` with a background color filling the entire section would be simple and effective.
 
-For the other problems, well... I've been using SVG more and more recently, and perhaps in a case of "everything is a nail when you have a hammer", I looked to SVG to solve the other problems, file size and hover regions.
+todo: gif bg-layers
+
+The other parts weren't as straightforward. I've been using SVG more and more recently, and perhaps in a case of "everything is a nail when you have a hammer", I looked to SVG to solve the other problems, file size and hover regions.
 
 ### SVG transparancy mask
 
 This is a simple technique that we've been using at ArenaNet for a while. I first saw it described in [Using SVG to Shrink Your PNGs](http://peterhrynkow.com/how-to-compress-a-png-like-a-jpeg/) in Sept 2014. The idea is to split a transparent image (PNG) into 2 opaque images, separating the transparancy data from the color data. The transparancy data is saved as a greyscale image, and works the same as a layer mask in Photoshop - black is transparent, white is opaque. These 2 images are fully opque meaning they can be compressed more easily (JPG, opaque PNG or GIF).
 
 Creating these images is easily done with [`png2svg`](https://www.npmjs.com/package/png2svg) by Alexander Daniel, which takes a transparent PNG as input, and outputs an SVG with the 2 images (transparency mask and base image) base64 encoded within. I then brought those images into Photoshop and reexported to ensure that the quality and file size met my expectations.
+
+todo: gif mask-layers
 
 ### SVG paths
 
@@ -63,9 +67,7 @@ Here are all the assets for this feature:
 - 4 images, one of each mount highlighted
 - paths for hoverable region
 
-<video autoplay loop style="max-width: 100%">
-  <source src="https://giant.gfycat.com/DependentSnoopyIrishwolfhound.webm" type="video/mp4">
-</video>
+todo: gif all-layers
 
 Here's the DOM and SVG outline:
 
@@ -107,7 +109,7 @@ Here's the DOM and SVG outline:
 </section>
 ```
 
-*I excluded some SVG boilerplate attrs, but the [full code is below](#fullcode)*
+*I excluded some SVG boilerplate attributes, but the [full code is below](#fullcode)*
 
 ### 00. Background & overlay
 
